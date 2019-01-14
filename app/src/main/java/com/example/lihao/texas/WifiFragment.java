@@ -74,7 +74,7 @@ public class WifiFragment extends Fragment {
         adapter = new SimpleAdapter(myContext, arraylist, R.layout.row, new String[] { "wifiName",  "capability", "level" }, new int[] { R.id.wifi_name, R.id.wifi_capability, R.id.wifi_level });
         lv.setAdapter(this.adapter);
 
-        wifi = (WifiManager) myContext.getSystemService(Context.WIFI_SERVICE);
+        wifi = (WifiManager) myContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifi.isWifiEnabled() == false)
         {
             Toast.makeText(myContext, "wifi is disabled..making it enabled", Toast.LENGTH_LONG).show();
