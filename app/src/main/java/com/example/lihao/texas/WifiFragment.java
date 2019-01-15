@@ -11,6 +11,8 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
+import android.support.annotation.LongDef;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -26,7 +28,9 @@ import android.widget.Toast;
 import com.example.lihao.texas.Model.WiFiInformation;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,8 +46,16 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 public class WifiFragment extends Fragment {
     private final String tag = "Realm";
+    private final String tagKe = "KEJunxing";
+
     private ListView lv;
     private Button buttonScan;
+    private Button buttonSubmit;
+    private Button buttonDbDelete;
+    private Button buttonDbExport;
+    private Button buttonDbSave;
+    private EditText locationX;
+    private EditText locationY;
     private EditText numOfAP;
     private SimpleAdapter adapter;
     private ArrayList<HashMap<String, Object>> arraylist = new ArrayList<HashMap<String, Object>>();
@@ -80,8 +92,18 @@ public class WifiFragment extends Fragment {
         final Context myContext = this.getContext();
 
         buttonScan = (Button) myView.findViewById(R.id.buttonScan);
+        buttonSubmit = (Button) myView.findViewById(R.id.buttonSubmit);
+        buttonDbExport = (Button) myView.findViewById(R.id.databaseExport);
+        buttonDbDelete = (Button) myView.findViewById(R.id.databaseDelete);
+        buttonDbSave = (Button) myView.findViewById(R.id.databaseSave);
+        locationX = (EditText) myView.findViewById(R.id.location_x);
+        locationY = (EditText) myView.findViewById(R.id.location_y);
+
         numOfAP = (EditText) myView.findViewById(R.id.numOfAP);
         lv = (ListView) myView.findViewById(R.id.list);
+
+
+
 
         adapter = new SimpleAdapter(myContext, arraylist, R.layout.row, new String[] { "wifiName",  "capability", "level" }, new int[] { R.id.wifi_name, R.id.wifi_capability, R.id.wifi_level });
         lv.setAdapter(this.adapter);
@@ -100,6 +122,9 @@ public class WifiFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 // TODO Auto-generated method stub
                 results = wifi.getScanResults();
+
+                Log.d(tagKe,"wifiResult:" + results);
+
                 size = results.size();
                 Toast.makeText(myContext, "wifi result size "+size, Toast.LENGTH_LONG).show();
 
@@ -156,9 +181,47 @@ public class WifiFragment extends Fragment {
             }
         });
 
+        buttonHandle();
+
     }
 
+    private void buttonHandle(){
+        final Context myContext = this.getContext();
+
+        buttonSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int x = Integer.parseInt(locationX.getText().toString());
+                int y = Integer.parseInt(locationY.getText().toString());
+                String wifiInfo = results.toString();
+                Toast.makeText(myContext, "Start saveWiFiInformation", Toast.LENGTH_SHORT).show();
+                saveWiFiInformation(realm,System.currentTimeMillis(),x,y,wifiInfo);
+
+            }
+        });
+
+        buttonDbExport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(myContext, "Start exportRealmFile", Toast.LENGTH_SHORT).show();
+                exportRealmFile();
+            }
+        });
+
+        buttonDbDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(myContext, "Start deleteRealmData", Toast.LENGTH_SHORT).show();
+                deleteDataFormDataBase();
+            }
+        });
+
+    }
+
+
+
     public void saveWiFiInformation(Realm realm, final long q_time, final int q_locationX, final int q_locationY, final String q_string){
+        final Context myContext = this.getContext();
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -168,6 +231,7 @@ public class WifiFragment extends Fragment {
                 wifiInformation.setLocation_y(q_locationY);
                 wifiInformation.setWifiInformation(q_string);
                 Log.d(tag,"---->saveWiFiInformation successfully<-----");
+                Toast.makeText(myContext, "saveWiFiInformation successfully", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -184,7 +248,8 @@ public class WifiFragment extends Fragment {
     public void exportRealmFile() {
         Realm realm = Realm.getDefaultInstance();
         final Context myContext = this.getContext();
-        Log.d(tag,"------->Start exportRealmFile<--------");
+
+
         final File file = new File(Environment.getExternalStorageDirectory().getPath().concat("/WiFiCollectionData_"+ System.currentTimeMillis() + ".realm"));
         if (file.exists()) {
             file.delete();
