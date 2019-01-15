@@ -191,8 +191,8 @@ public class WifiFragment extends Fragment {
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int x = Integer.parseInt(locationX.getText().toString());
-                int y = Integer.parseInt(locationY.getText().toString());
+                double x = Double.parseDouble(locationX.getText().toString());
+                double y = Double.parseDouble(locationY.getText().toString());
                 String wifiInfo = results.toString();
                 Toast.makeText(myContext, "Start saveWiFiInformation", Toast.LENGTH_SHORT).show();
                 saveWiFiInformation(realm,System.currentTimeMillis(),x,y,wifiInfo);
@@ -220,7 +220,7 @@ public class WifiFragment extends Fragment {
 
 
 
-    public void saveWiFiInformation(Realm realm, final long q_time, final int q_locationX, final int q_locationY, final String q_string){
+    public void saveWiFiInformation(Realm realm, final long q_time, final double q_locationX, final double q_locationY, final String q_string){
         final Context myContext = this.getContext();
         realm.executeTransaction(new Realm.Transaction() {
             @Override

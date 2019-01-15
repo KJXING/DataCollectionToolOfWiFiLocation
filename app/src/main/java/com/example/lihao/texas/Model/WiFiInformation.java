@@ -6,8 +6,8 @@ public class WiFiInformation extends RealmObject {
 
     long timeStamp;
 
-    int location_x;
-    int location_y;
+    double location_x;
+    double location_y;
 
     String wifiInformation;
 
@@ -19,19 +19,19 @@ public class WiFiInformation extends RealmObject {
         this.timeStamp = timeStamp;
     }
 
-    public int getLocation_x() {
+    public double getLocation_x() {
         return location_x;
     }
 
-    public void setLocation_x(int location_x) {
+    public void setLocation_x(double location_x) {
         this.location_x = location_x;
     }
 
-    public int getLocation_y() {
+    public double getLocation_y() {
         return location_y;
     }
 
-    public void setLocation_y(int location_y) {
+    public void setLocation_y(double location_y) {
         this.location_y = location_y;
     }
 
