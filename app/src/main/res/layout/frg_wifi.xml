@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->
     <!--android:paddingRight="@dimen/activity_horizontal_margin"-->
@@ -11,28 +12,106 @@
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/textStatus"
-            android:text="Num of AP: "
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/numOfAP"
-            android:text="5"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="6"
-            android:inputType="number"/>
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/textStatus"
+                android:text="Num of AP: "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <Button android:id="@+id/buttonScan"
-            android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/numOfAP"
+                android:text="5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:inputType="number"/>
+
+            <Button android:id="@+id/buttonScan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scan" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Scan" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location X:"/>
+
+            <EditText
+                android:id="@+id/location_x"
+                android:text="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:inputType="number"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location Y:"/>
+
+            <EditText
+                android:id="@+id/location_y"
+                android:text="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="6"
+                android:inputType="number"/>
+            <Button android:id="@+id/buttonSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submit" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/databaseDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:textColor="@android:color/holo_red_light"
+                android:text="DB Delete" />
+
+            <Button android:id="@+id/databaseExport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DB Export" />
+
+            <Button android:id="@+id/databaseSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DB Save" />
+
+
+        </LinearLayout>
+
 
     </LinearLayout>
+
 
 
     <ListView

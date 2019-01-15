@@ -10,8 +10,10 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +23,16 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.example.lihao.texas.Model.WiFiInformation;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+
+import io.realm.Realm;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
@@ -34,6 +41,7 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
  */
 
 public class WifiFragment extends Fragment {
+    private final String tag = "Realm";
     private ListView lv;
     private Button buttonScan;
     private EditText numOfAP;
@@ -47,6 +55,8 @@ public class WifiFragment extends Fragment {
     private boolean continueToShow = true;
     private BroadcastReceiver mBroadcastReceiver;
     private static final int REQUEST_ACCESS_LOCATION = 101;
+    private Realm realm;
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -57,6 +67,8 @@ public class WifiFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         populateAutoComplete();
+
+        realm = Realm.getDefaultInstance();
         return inflater.inflate(R.layout.frg_wifi, container, false);
 
     }
@@ -146,7 +158,41 @@ public class WifiFragment extends Fragment {
 
     }
 
+    public void saveWiFiInformation(Realm realm, final long q_time, final int q_locationX, final int q_locationY, final String q_string){
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                WiFiInformation wifiInformation = realm.createObject(WiFiInformation.class);
+                wifiInformation.setTimeStamp(q_time);
+                wifiInformation.setLocation_x(q_locationX);
+                wifiInformation.setLocation_y(q_locationY);
+                wifiInformation.setWifiInformation(q_string);
+                Log.d(tag,"---->saveWiFiInformation successfully<-----");
+            }
+        });
+    }
 
+    public void deleteDataFormDataBase(){
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.delete(WiFiInformation.class);
+            }
+        });
+    }
+
+    public void exportRealmFile() {
+        Realm realm = Realm.getDefaultInstance();
+        final Context myContext = this.getContext();
+        Log.d(tag,"------->Start exportRealmFile<--------");
+        final File file = new File(Environment.getExternalStorageDirectory().getPath().concat("/WiFiCollectionData_"+ System.currentTimeMillis() + ".realm"));
+        if (file.exists()) {
+            file.delete();
+        }
+        realm.writeCopyTo(file);
+        realm.close();
+        Toast.makeText(myContext, "Success export realm file", Toast.LENGTH_SHORT).show();
+    }
 
     private void populateAutoComplete() {
         if (!mayRequestLocation()) {
