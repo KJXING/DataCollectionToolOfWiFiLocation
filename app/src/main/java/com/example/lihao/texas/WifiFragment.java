@@ -61,6 +61,11 @@ public class WifiFragment extends Fragment {
     private ArrayList<HashMap<String, Object>> arraylist = new ArrayList<HashMap<String, Object>>();
     private WifiManager wifi;
     private List<ScanResult> results;
+
+    private List<HashMap<String,List<Integer>>> wifiInfoList = new ArrayList<HashMap<String,List<Integer>>>();
+    private HashMap<String,List<Integer>> stringListHashMap = new HashMap<>();
+    private HashMap<String,Double> wifiList = new HashMap<>();
+
     private int size = 0;
     private int apCount = 0;
     private int numOfAPToShow = 0;
@@ -128,6 +133,21 @@ public class WifiFragment extends Fragment {
                 size = results.size();
                 Toast.makeText(myContext, "wifi result size "+size, Toast.LENGTH_LONG).show();
 
+                for (int i = 0; i < results.size();i++){
+                    if (stringListHashMap.containsKey(results.get(i).BSSID)){
+                        List<Integer> levelList = stringListHashMap.get(results.get(i).BSSID);
+                        levelList.add(results.get(i).level);
+                        stringListHashMap.put(results.get(i).BSSID,levelList);
+
+                    } else {
+                        List<Integer> levelList = new ArrayList<Integer>();
+                        levelList.add(results.get(i).level);
+                        stringListHashMap.put(results.get(i).BSSID,levelList);
+
+                    }
+                    Log.d(tagKe,"stringListHashMap: " + stringListHashMap.toString());
+                }
+
                 try {
                     apCount = 0;
                     continueToShow = true;
@@ -170,8 +190,19 @@ public class WifiFragment extends Fragment {
                 }
             }
         };
+
+
         myContext.registerReceiver(mBroadcastReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
+
+
+
+        buttonHandle();
+
+    }
+
+    private void buttonHandle(){
+        final Context myContext = this.getContext();
 
         buttonScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,19 +212,19 @@ public class WifiFragment extends Fragment {
             }
         });
 
-        buttonHandle();
-
-    }
-
-    private void buttonHandle(){
-        final Context myContext = this.getContext();
-
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 double x = Double.parseDouble(locationX.getText().toString());
                 double y = Double.parseDouble(locationY.getText().toString());
-                String wifiInfo = results.toString();
+
+                for (String key: stringListHashMap.keySet()){
+                    List<Integer> levelList = stringListHashMap.get(key);
+                    wifiList.put(key,median(levelList));
+                }
+
+
+                String wifiInfo = wifiList.toString();
                 Toast.makeText(myContext, "Start saveWiFiInformation", Toast.LENGTH_SHORT).show();
                 saveWiFiInformation(realm,System.currentTimeMillis(),x,y,wifiInfo);
 
@@ -219,6 +250,15 @@ public class WifiFragment extends Fragment {
     }
 
 
+    public double median(List<Integer> arr){
+        Collections.sort(arr);
+        int middle = arr.size()/2;
+        if (arr.size()%2 == 1){
+            return arr.get(middle);
+        } else {
+            return (arr.get(middle-1) + arr.get(middle))/2.0;
+        }
+    }
 
     public void saveWiFiInformation(Realm realm, final long q_time, final double q_locationX, final double q_locationY, final String q_string){
         final Context myContext = this.getContext();
